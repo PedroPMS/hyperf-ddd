@@ -3,31 +3,32 @@
 namespace App\User\Presentation;
 
 use App\Controller\AbstractController;
-use App\Model\User;
+use App\User\Domain\UserRepository;
+use App\User\Infrastructure\Database\UserModel;
 use Hyperf\Database\Model\Model;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\HttpServer\Contract\ResponseInterface;
+use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
 
 class UserController extends AbstractController
 {
-    public function index()
+    public function index(UserRepository $repository, ResponseInterface $response): Psr7ResponseInterface
     {
-
-        User::create(['id' => uniqid(), 'name' => 'pedro', 'email' => 'email@gmail.com']);
-        return User::get();
+        return $response->json($repository->getAll()->all());
     }
 
-    public function show(string $id): User
+    public function show(string $id): UserModel
     {
-        return User::find($id);
+        return UserModel::find($id);
     }
 
-    public function store(RequestInterface $request): User|Model
+    public function store(RequestInterface $request): UserModel|Model
     {
-        return User::create($request->all());
+        return UserModel::create($request->all());
     }
 
     public function delete(string $id): int
     {
-        return User::destroy($id);
+        return UserModel::destroy($id);
     }
 }

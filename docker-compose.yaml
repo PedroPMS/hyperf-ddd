@@ -4,7 +4,7 @@ services:
 
   hyperf-skeleton:
     container_name: hyperf-skeleton
-    image: hyperf/hyperf:8.0-alpine-v3.13-swoole
+    image: hyperf/hyperf:8.1-alpine-v3.13-swoole
     working_dir: /app
     entrypoint: [ "php", "bin/hyperf.php", "server:watch" ]
     volumes:

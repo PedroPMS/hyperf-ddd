@@ -10,13 +10,13 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-use App\Controller\UserController;
+//use App\User\Presentation\UserController;
 use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
 
-Router::get('/testes', 'App\Controller\UserController@index');
 Router::addGroup('/users', function () {
+    Router::get('', 'App\User\Presentation\UserController@index');
 //    Router::get('/{id}', [UserController::class, 'show']);
 //    Router::post('', [UserController::class, 'store']);
 //    Router::delete('/{id}', [UserController::class, 'delete']);
