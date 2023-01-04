@@ -21,4 +21,9 @@ abstract class StringValueObject implements JsonSerializable
     {
         return $this->value;
     }
+
+    public function value(): string
+    {
+        return $this->value;
+    }
 }

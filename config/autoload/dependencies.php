@@ -12,4 +12,5 @@ declare(strict_types=1);
 return [
     \App\Shared\Domain\UuidGeneratorInterface::class => \App\Shared\Infrastructure\RamseyUuidGenerator::class,
     \App\User\Domain\UserRepository::class => \App\User\Infrastructure\Database\UserHyperfRepository::class,
+    \App\Shared\Domain\Bus\Query\QueryBusInterface::class => \App\Shared\Application\QueryBusFactory::class,
 ];

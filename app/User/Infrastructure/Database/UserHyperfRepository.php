@@ -5,6 +5,7 @@ namespace App\User\Infrastructure\Database;
 use App\User\Domain\User;
 use App\User\Domain\UserRepository;
 use App\User\Domain\Users;
+use App\User\Domain\ValueObject\UserId;
 
 final class UserHyperfRepository implements UserRepository
 {
@@ -26,6 +27,18 @@ final class UserHyperfRepository implements UserRepository
         )->toArray();
 
         return new Users($users);
+    }
+
+    public function findById(UserId $id): ?User
+    {
+        /** @var UserModel $userModel */
+        $userModel = $this->model->newQuery()->find($id->value());
+
+        if (!$userModel) {
+            return null;
+        }
+
+        return $this->toDomain($userModel);
     }
 
     public function create(User $user): void

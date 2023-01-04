@@ -3,23 +3,33 @@
 namespace App\User\Presentation;
 
 use App\Controller\AbstractController;
-use App\User\Domain\UserRepository;
+use App\Shared\Domain\Bus\Query\QueryBusInterface;
+use App\User\Application\Get\GetUserByIdQuery;
+use App\User\Application\List\GetUsersQuery;
 use App\User\Infrastructure\Database\UserModel;
 use Hyperf\Database\Model\Model;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\HttpServer\Contract\ResponseInterface;
-use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class UserController extends AbstractController
 {
-    public function index(UserRepository $repository, ResponseInterface $response): Psr7ResponseInterface
+    public function __construct(private readonly QueryBusInterface $queryBus)
     {
-        return $response->json($repository->getAll()->all());
+        parent::__construct();
     }
 
-    public function show(string $id): UserModel
+    public function index(): ResponseInterface
     {
-        return UserModel::find($id);
+        $usersResponse = $this->queryBus->ask(new GetUsersQuery());
+
+        return $this->response->json($usersResponse->jsonSerialize());
+    }
+
+    public function show(string $id): ResponseInterface
+    {
+        $userResponse = $this->queryBus->ask(new GetUserByIdQuery($id));
+
+        return $this->response->json($userResponse->jsonSerialize());
     }
 
     public function store(RequestInterface $request): UserModel|Model

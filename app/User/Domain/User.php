@@ -7,8 +7,9 @@ use App\User\Domain\ValueObject\UserEmail;
 use App\User\Domain\ValueObject\UserId;
 use App\User\Domain\ValueObject\UserName;
 use App\User\Domain\ValueObject\UserPassword;
+use JsonSerializable;
 
-class User implements \JsonSerializable
+class User implements JsonSerializable
 {
     public function __construct(
         public readonly UserId       $id,
