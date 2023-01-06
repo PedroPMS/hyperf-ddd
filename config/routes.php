@@ -18,7 +18,7 @@ Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@i
 Router::addGroup('/users', function () {
     Router::get('', 'App\User\Presentation\UserController@index');
     Router::get('/{id}', 'App\User\Presentation\UserController@show');
-//    Router::post('', [UserController::class, 'store']);
+    Router::post('', 'App\User\Presentation\UserController@store');
 //    Router::delete('/{id}', [UserController::class, 'delete']);
 });
 

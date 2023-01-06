@@ -13,4 +13,5 @@ return [
     \App\Shared\Domain\UuidGeneratorInterface::class => \App\Shared\Infrastructure\RamseyUuidGenerator::class,
     \App\User\Domain\UserRepository::class => \App\User\Infrastructure\Database\UserHyperfRepository::class,
     \App\Shared\Domain\Bus\Query\QueryBusInterface::class => \App\Shared\Application\QueryBusFactory::class,
+    \App\Shared\Domain\Bus\Command\CommandBusInterface::class => \App\Shared\Application\CommandBusFactory::class,
 ];

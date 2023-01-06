@@ -5,6 +5,8 @@ namespace App\User\Infrastructure\Database;
 use App\User\Domain\User;
 use App\User\Domain\UserRepository;
 use App\User\Domain\Users;
+use App\User\Domain\ValueObject\UserCpf;
+use App\User\Domain\ValueObject\UserEmail;
 use App\User\Domain\ValueObject\UserId;
 
 final class UserHyperfRepository implements UserRepository
@@ -43,7 +45,7 @@ final class UserHyperfRepository implements UserRepository
 
     public function create(User $user): void
     {
-        // TODO: Implement create() method.
+        $this->model->newQuery()->create($user->jsonSerialize());
     }
 
     private function toDomain(UserModel $userModel): User
@@ -55,5 +57,29 @@ final class UserHyperfRepository implements UserRepository
             $userModel->cpf,
             $userModel->password,
         );
+    }
+
+    public function findByEmail(UserEmail $email): ?User
+    {
+        /** @var UserModel $userModel */
+        $userModel = $this->model->newQuery()->where('email', $email->value())->first();
+
+        if (!$userModel) {
+            return null;
+        }
+
+        return $this->toDomain($userModel);
+    }
+
+    public function findByCpf(UserCpf $cpf): ?User
+    {
+        /** @var UserModel $userModel */
+        $userModel = $this->model->newQuery()->where('cpf', $cpf->value())->first();
+
+        if (!$userModel) {
+            return null;
+        }
+
+        return $this->toDomain($userModel);
     }
 }

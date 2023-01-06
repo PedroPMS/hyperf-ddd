@@ -25,6 +25,7 @@
         "hyperf/memory": "~3.0.0",
         "hyperf/process": "~3.0.0",
         "hyperf/redis": "~3.0.0",
+        "hyperf/validation": "^3.0",
         "lambdish/phunctional": "^2.1",
         "ramsey/uuid": "^4.7",
         "symfony/messenger": "^6.2"

@@ -3,17 +3,17 @@
 namespace App\User\Presentation;
 
 use App\Controller\AbstractController;
+use App\Shared\Domain\Bus\Command\CommandBusInterface;
 use App\Shared\Domain\Bus\Query\QueryBusInterface;
+use App\User\Application\Create\CreateUserCommand;
 use App\User\Application\Get\GetUserByIdQuery;
 use App\User\Application\List\GetUsersQuery;
 use App\User\Infrastructure\Database\UserModel;
-use Hyperf\Database\Model\Model;
-use Hyperf\HttpServer\Contract\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class UserController extends AbstractController
 {
-    public function __construct(private readonly QueryBusInterface $queryBus)
+    public function __construct(private readonly QueryBusInterface $queryBus, private readonly CommandBusInterface $commandBus)
     {
         parent::__construct();
     }
@@ -32,9 +32,18 @@ class UserController extends AbstractController
         return $this->response->json($userResponse->jsonSerialize());
     }
 
-    public function store(RequestInterface $request): UserModel|Model
+    public function store(CreateUserRequest $request): ResponseInterface
     {
-        return UserModel::create($request->all());
+        $command = new CreateUserCommand(
+            $request->input('name'),
+            $request->input('email'),
+            $request->input('cpf'),
+            $request->input('password'),
+        );
+
+        $this->commandBus->dispatch($command);
+
+        return $this->response->withStatus(201);
     }
 
     public function delete(string $id): int
