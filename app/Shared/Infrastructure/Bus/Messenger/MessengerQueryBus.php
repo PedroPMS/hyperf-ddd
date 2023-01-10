@@ -9,11 +9,13 @@ use App\Shared\Domain\Bus\Query\QueryBusInterface;
 use App\Shared\Domain\Bus\Query\ResponseInterface;
 use App\Shared\Infrastructure\Bus\CallableFirstParameterExtractor;
 use App\Shared\Infrastructure\Bus\QueryNotRegisteredException;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
+use Throwable;
 
 final class MessengerQueryBus implements QueryBusInterface
 {
@@ -30,6 +32,10 @@ final class MessengerQueryBus implements QueryBusInterface
         );
     }
 
+    /**
+     * @throws Throwable
+     * @throws QueryNotRegisteredException
+     */
     public function ask(QueryInterface $query): ?ResponseInterface
     {
         try {
@@ -39,6 +45,8 @@ final class MessengerQueryBus implements QueryBusInterface
             return $stamp->getResult();
         } catch (NoHandlerForMessageException) {
             throw new QueryNotRegisteredException("Query " . get_class($query) . " not registered.");
+        } catch (HandlerFailedException $error) {
+            throw $error->getPrevious() ?? $error;
         }
     }
 }
