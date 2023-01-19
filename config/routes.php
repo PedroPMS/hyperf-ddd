@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\User\Presentation\UserController;
+use Src\User\Presentation\UserController;
 use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');

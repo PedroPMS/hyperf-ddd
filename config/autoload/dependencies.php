@@ -10,8 +10,8 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 return [
-    \App\Shared\Domain\UuidGeneratorInterface::class => \App\Shared\Infrastructure\RamseyUuidGenerator::class,
-    \App\User\Domain\UserRepository::class => \App\User\Infrastructure\Database\UserHyperfRepository::class,
-    \App\Shared\Domain\Bus\Query\QueryBusInterface::class => \App\Shared\Application\QueryBusFactory::class,
-    \App\Shared\Domain\Bus\Command\CommandBusInterface::class => \App\Shared\Application\CommandBusFactory::class,
+    \Src\Shared\Domain\UuidGeneratorInterface::class => \Src\Shared\Infrastructure\RamseyUuidGenerator::class,
+    \Src\User\Domain\UserRepository::class => \Src\User\Infrastructure\Database\UserHyperfRepository::class,
+    \Src\Shared\Domain\Bus\Query\QueryBusInterface::class => \Src\Shared\Application\QueryBusFactory::class,
+    \Src\Shared\Domain\Bus\Command\CommandBusInterface::class => \Src\Shared\Application\CommandBusFactory::class,
 ];
