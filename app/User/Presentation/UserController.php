@@ -6,9 +6,10 @@ use App\Controller\AbstractController;
 use App\Shared\Domain\Bus\Command\CommandBusInterface;
 use App\Shared\Domain\Bus\Query\QueryBusInterface;
 use App\User\Application\Create\CreateUserCommand;
+use App\User\Application\Delete\DeleteUserByIdCommand;
 use App\User\Application\Get\GetUserByIdQuery;
 use App\User\Application\List\GetUsersQuery;
-use App\User\Infrastructure\Database\UserModel;
+use App\User\Application\Update\UpdateUserCommand;
 use Psr\Http\Message\ResponseInterface;
 
 class UserController extends AbstractController
@@ -46,8 +47,24 @@ class UserController extends AbstractController
         return $this->response->withStatus(201);
     }
 
-    public function delete(string $id): int
+    public function update(UdpateUserRequest $request, string $id): ResponseInterface
     {
-        return UserModel::destroy($id);
+        $command = new UpdateUserCommand(
+            $id,
+            $request->input('name'),
+            $request->input('email'),
+            $request->input('cpf'),
+        );
+
+        $this->commandBus->dispatch($command);
+
+        return $this->response->withStatus(200);
+    }
+
+    public function delete(string $id): ResponseInterface
+    {
+        $this->commandBus->dispatch(new DeleteUserByIdCommand($id));
+
+        return $this->response->withStatus(204);
     }
 }

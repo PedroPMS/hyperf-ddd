@@ -8,6 +8,7 @@ use App\User\Domain\Users;
 use App\User\Domain\ValueObject\UserCpf;
 use App\User\Domain\ValueObject\UserEmail;
 use App\User\Domain\ValueObject\UserId;
+use Exception;
 
 final class UserHyperfRepository implements UserRepository
 {
@@ -31,6 +32,11 @@ final class UserHyperfRepository implements UserRepository
         return new Users($users);
     }
 
+    public function create(User $user): void
+    {
+        $this->model->newQuery()->create($user->jsonSerialize());
+    }
+
     public function findById(UserId $id): ?User
     {
         /** @var UserModel $userModel */
@@ -43,9 +49,51 @@ final class UserHyperfRepository implements UserRepository
         return $this->toDomain($userModel);
     }
 
-    public function create(User $user): void
+    public function findByEmail(UserEmail $email, ?UserId $excludeId = null): ?User
     {
-        $this->model->newQuery()->create($user->jsonSerialize());
+        /** @var UserModel $userModel */
+        $userModel = $this->model
+            ->newQuery()
+            ->where('email', $email->value())
+            ->when($excludeId, fn($query) => $query->where('id', '!=', $excludeId->value()))
+            ->first();
+
+        if (!$userModel) {
+            return null;
+        }
+
+        return $this->toDomain($userModel);
+    }
+
+    public function findByCpf(UserCpf $cpf, ?UserId $excludeId = null): ?User
+    {
+        /** @var UserModel $userModel */
+        $userModel = $this->model
+            ->newQuery()
+            ->where('cpf', $cpf->value())
+            ->when($excludeId, fn($query) => $query->where('id', '!=', $excludeId->value()))
+            ->first();
+
+        if (!$userModel) {
+            return null;
+        }
+
+        return $this->toDomain($userModel);
+    }
+
+    public function update(User $user): void
+    {
+        $userModel = $this->model->newQuery()->find($user->id->value());
+        $userModel->update($user->jsonSerialize());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function delete(UserId $id): void
+    {
+        $userModel = $this->model->newQuery()->find($id->value());
+        $userModel->delete();
     }
 
     private function toDomain(UserModel $userModel): User
@@ -57,29 +105,5 @@ final class UserHyperfRepository implements UserRepository
             $userModel->cpf,
             $userModel->password,
         );
-    }
-
-    public function findByEmail(UserEmail $email): ?User
-    {
-        /** @var UserModel $userModel */
-        $userModel = $this->model->newQuery()->where('email', $email->value())->first();
-
-        if (!$userModel) {
-            return null;
-        }
-
-        return $this->toDomain($userModel);
-    }
-
-    public function findByCpf(UserCpf $cpf): ?User
-    {
-        /** @var UserModel $userModel */
-        $userModel = $this->model->newQuery()->where('cpf', $cpf->value())->first();
-
-        if (!$userModel) {
-            return null;
-        }
-
-        return $this->toDomain($userModel);
     }
 }

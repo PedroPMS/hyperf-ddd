@@ -3,18 +3,19 @@
 namespace App\User\Domain\UseCases;
 
 use App\User\Domain\Exceptions\UserAlreadyExistsException;
+use App\User\Domain\Exceptions\UserNotFoundException;
 use App\User\Domain\User;
 use App\User\Domain\UserRepository;
 use App\User\Domain\ValueObject\UserCpf;
 use App\User\Domain\ValueObject\UserEmail;
 use App\User\Domain\ValueObject\UserId;
 use App\User\Domain\ValueObject\UserName;
-use App\User\Domain\ValueObject\UserPassword;
 
-class UserCreator
+class UserUpdater
 {
     public function __construct(
-        private readonly UserRepository $repository,
+        private readonly UserRepository             $repository,
+        private readonly UserFind                   $userFind,
         private readonly CheckUserDataAlreadyExists $dataAlreadyExists
     )
     {
@@ -22,13 +23,15 @@ class UserCreator
 
     /**
      * @throws UserAlreadyExistsException
+     * @throws UserNotFoundException
      */
-    public function handle(UserId $id, UserName $name, UserEmail $email, UserCpf $cpf, UserPassword $password): User
+    public function handle(UserId $id, UserName $name, UserEmail $email, UserCpf $cpf): User
     {
-        $this->dataAlreadyExists->handle($email, $cpf);
+        $user = $this->userFind->handle($id);
+        $this->dataAlreadyExists->handle($email, $cpf, $id);
 
-        $user = User::create($id, $name, $email, $cpf, $password);
-        $this->repository->create($user);
+        $user = User::create($id, $name, $email, $cpf, $user->password);
+        $this->repository->update($user);
 
         return $user;
     }
